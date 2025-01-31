@@ -1,5 +1,6 @@
 #include "doubll.h"
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
 
 void insertNode(node *&head, int index, int data) {
@@ -42,22 +43,36 @@ void deleteNode(node *&head, int index) {
     return;
   }
 
-  node *walker = head;
-  for (int i = 0; i < index; i++) {
-    if (!walker)
-      return;
-    else {
-      walker = walker->next;
-    }
+  node *walker = head, *temp;
+
+  if (index == 0) {
+    head = walker->next;
+    free(walker);
+    return;
   }
 
-  // replace node and free memory
-  if (walker->prev)
-    walker->prev->next = walker->next; // checks if current's prev is not null
-  if (walker->next)
-    walker->next->prev = walker->prev; // checks if current's next is not null
-  if (head == walker)
-    head = walker->next; // prevents from head pointing to nothing
+  for (int i = index; i >= 1; i--) {
+    temp = walker;
+    walker = walker->next;
+    walker->prev = temp;
+  }
+
+  if (walker == nullptr) {
+    cout << "Error: Overflow" << endl;
+    return;
+  }
+
+  // pointer check cases
+  if (walker->prev != nullptr) {
+    walker->prev->next = walker->next;
+  }
+  if (walker->next != nullptr) {
+    walker->next->prev = walker->prev;
+  }
+  if (head == walker) {
+    head = walker->next;
+  }
+  free(walker);
 }
 
 void displayList(node *head) {
